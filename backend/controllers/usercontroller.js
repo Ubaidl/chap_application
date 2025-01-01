@@ -2,6 +2,7 @@ import express from 'express'
 import User from '../modules/usermodel.js';
 
 
+
 const generatetoken = async (user_id) => {
     try {
         const user = await User.findById(user_id);
@@ -24,69 +25,53 @@ const generatetoken = async (user_id) => {
 
 
 const userregister = async (req, res) => {
-    // //res.send('hello world')
-    // // res.status(200).json({
-    // //     message: "ok"
-    // // })
-    //const fullname = req.body;
-    //return res.send("i am a register")
 
-
-    // // const { fullname, username, email, password, gender, profilepic } = req.body;
     try {
         const { fullname, username, email, password, gender } = req.body;
-        console.log(fullname, username, email, password, gender)
-        // return res.status(200).json({ fullname, username, email, password, gender });
+        console.log(fullname, username, email, password, gender);
+
+        // Check if all fields are filled
         if ([fullname, username, email, password, gender].some((field) => field.trim() === "")) {
-            console.log("all fields are must be filled")
-            return res.status(400).json({ error: "all fielsd are must required" })
+            console.log("All fields must be filled");
+            return res.status(400).json({ error: "All fields are required" });
         }
-        // //return res.status(201).json({
-        // msg: "every thing is ok till now"
-        //  })
 
-
-        const existeduser = await User.findOne({
-            $or: [{ username }, { email }]
-        })
+        // Check if user already exists
+        const existeduser = await User.findOne({ $or: [{ username }, { email }] });
         if (existeduser) {
-            console.log("user already existed");
-            return res.status(400).json({ error: "user already existed" })
-
+            //console.log("User already exists");
+            return res.status(400).json({ error: "User already exists" });
         }
 
-        // //     //temporary hash the password
+        // Set profile picture based on gender
+        const boyprofile = `https://avatar.iran.liara.run/public/boy?username=${username}`;
+        const girlprofile = `https://avatar.iran.liara.run/public/girl?username=${username}`;
 
-        const boyprofile = `https://avatar.iran.liara.run/public/boy?username=${username}`
-        const girlprofile = `https://avatar.iran.liara.run/public/girl?username=${username}`
-
+        // Create new user
         const newuser = await User.create({
             fullname,
             username,
             email,
             password,
             gender,
-            profilepic: gender === 'male' ? boyprofile : girlprofile
+            profilepic: gender === 'male' ? boyprofile : girlprofile,
+        });
 
-        })
-        const createduser = await User.findById(newuser._id)
+        // Fetch the created user to ensure it was saved properly
+        const createduser = await User.findById(newuser._id);
         if (!createduser) {
             return res.status(500).json({ error: "Something went wrong" });
         }
 
-        return res.status(201).json({
-            createduser,
-        });
-
-
-
+        // Return the created user details
+        return res.status(201).json({ createduser });
     } catch (error) {
-        res.status(500).json({ error: "internall error" })
-        console.log("error")
-
+        // Log and handle errors
+        console.error("Error:", error.message);
+        return res.status(500).json({ error: "Internal server error" });
     }
+};
 
-}
 const userlogin = async (req, res) => {
 
     try {
@@ -119,6 +104,7 @@ const userlogin = async (req, res) => {
         // error capture
         const refreshtoken = await generatetoken(user._id)
         //return res.status(400).json({ ref: refreshtoken });
+        //return res.send(refreshtoken);
 
 
         const loggedinuser = await User.findById(user._id).select("-password -refreshtoken")
@@ -128,16 +114,19 @@ const userlogin = async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
         }
 
 
 
 
-        return res.status(201).cookie("refreshtoken", refreshtoken, options).json({
-            user: loggedinuser,
-            message: "user loggedin successfully"
-        })
+        return res.status(200)
+            .cookie('refreshtoken', refreshtoken, options)
+            .json({
+                user: loggedinuser,
+                refreshtoken,
+                message: "User logged in successfully"
+            });
     } catch (error) {
         console.error("Login error:", error.message);
         return res.status(500).json({ error: "Internal server error" });
@@ -204,7 +193,7 @@ const userlogout = async (req, res) => {
         // Set cookie options
         const options = {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
         };
 
         // Clear the refresh token cookie and send response

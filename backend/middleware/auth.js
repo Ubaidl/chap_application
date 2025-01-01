@@ -3,12 +3,16 @@ import User from '../modules/usermodel.js'
 
 const verifyjwt = (async (req, res, next) => {
     try {
+        //console.log(re.cookies)
         const token = req.cookies?.refreshtoken;
+
+
+        //console.log("this is a token", token);
         //console.log(token)
 
         if (!token) {
             return res.status(401).json({
-                error: "unauthorized request",
+                error: "unauthorized request please firt login",
             });
 
         }

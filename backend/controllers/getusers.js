@@ -2,9 +2,11 @@ import express from 'express'
 import User from '../modules/usermodel.js';
 
 const getalluserforsidebar = async (req, res) => {
+    // return res.send("hello boys");
 
     try {
         const loggedinuser = req.user._id;
+        // return res.send(loggedinuser)
 
         if (!loggedinuser) {
             return res.status(500).json({ error: "user does not exist" });

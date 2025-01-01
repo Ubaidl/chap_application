@@ -5,9 +5,8 @@ const messageschema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
-
     },
-    receiverid: {
+    receiverId: {  // Change 'receiverid' to 'receiverId'
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
@@ -16,11 +15,9 @@ const messageschema = new Schema({
         type: String,
         required: true,
     },
-
-
 }, {
     timestamps: true,
-}
-);
-const Message = mongoose.model("Message", messageschema)
+});
+
+const Message = mongoose.model("Message", messageschema);
 export default Message;

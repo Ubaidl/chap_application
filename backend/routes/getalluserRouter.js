@@ -3,6 +3,7 @@ import verifyjwt from '../middleware/auth.js'
 const router = express.Router();
 import { getalluserforsidebar } from '../controllers/getusers.js';
 
-router.get('/', verifyjwt, getalluserforsidebar);
+router.get('/users', verifyjwt, getalluserforsidebar);
+
 
 export default router; 

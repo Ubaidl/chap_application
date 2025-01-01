@@ -30,6 +30,7 @@ const userschema = new Schema({
         required: true,
         enum: ['male', 'female']
     },
+    refreshtoken: { type: String },
 
 }, {
     timestamps: true,
@@ -67,5 +68,9 @@ userschema.methods.generaterefreshtoken = async function () {
 }
 
 
+
 const User = mongoose.model("User", userschema)
-export default User; 
+export default User;
+
+
+

@@ -1,18 +1,30 @@
 import React from 'react'
 import Conversation from './Conversation'
-
+import useGetConversations from '../hooks/usegetConversations'
+import { getRandomEmoji } from '../util/emojies'; // Ensure getRandomEmoji is being imported properly
 
 const Conversations = () => {
-    console.log('Rendering Conversations component...');
+    const { loading, conversations } = useGetConversations();
+    console.log("conversations", conversations);
+
     return (
-        <div className='py-2 flex flex-col overflow-auto'>
-            <Conversation />
-            <Conversation />
-            <Conversation />
+        <div>
+            {/* Ensure you return the JSX inside the map */}
+            {conversations.map((conversation, idx) => {
+                return (
+                    <Conversation
+                        key={conversation._id}
+                        conversation={conversation}
+                        emoji={getRandomEmoji()}
+                        lastIdx={idx === conversations.length - 1}
+                    />
+                );
+            })}
 
-
+            {/* Loading spinner when the data is still being fetched */}
+            {loading ? <span className='loading loading-spinner'></span> : null}
         </div>
     )
 }
 
-export default Conversations
+export default Conversations;

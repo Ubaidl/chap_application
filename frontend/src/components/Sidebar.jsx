@@ -7,13 +7,16 @@ import Logout from './Logout'
 const Sidebar = () => {
     return (
         <>
-            <div className='boredr-r border-slate-500 py-4 flex flex-col'>
+            <div className='boredr-r border-slate-400 py-4 flex flex-col'>
                 <Searchbar />
                 <div className='divider px-3'></div>
                 <Conversations />
                 <Logout />
 
+
+
             </div>
+
 
 
 
