@@ -2,6 +2,7 @@ import express from 'express';
 import Conservation from '../modules/conservation.js';
 import Message from '../modules/messages.js';
 import Mongoose from 'mongoose'; // import with uppercase M
+import { getreceiversocketid, io } from '../Socket/socket.js';
 
 const sendmessage = async (req, res) => {
     try {
@@ -9,9 +10,9 @@ const sendmessage = async (req, res) => {
         const { id: receiverId } = req.params;
         const senderId = req.user?._id;
 
-        console.log("Request body:", req.body);
-        console.log("Receiver ID:", receiverId);
-        console.log("Sender ID:", senderId);
+        // console.log("Request body:", req.body);
+        // console.log("Receiver ID:", receiverId);
+        // console.log("Sender ID:", senderId);
 
         if (!senderId || !receiverId || !message) {
             console.error("Validation failed: Missing required fields");
@@ -44,10 +45,18 @@ const sendmessage = async (req, res) => {
             conservation.messages.push(newMessage._id);
 
         }
+        const receversocketid = getreceiversocketid(receiverId);
+        console.log("Receiver socket ID  ha ya   bhaii   dakhne !!!!!:", receversocketid);
+        //console.log("Receiver socket ID  ya haaaa:", receversocketid);
+
+        if (receversocketid) {
+            io.to(receversocketid).emit("newmessage", newMessage)
+        } else {
+            console.error("Receiver socket not found for user:", receiverId);
+        }
 
 
-
-        console.log("Saving conversation and message...");
+        //console.log("Saving conversation and message...");
         await Promise.all([conservation.save(), newMessage.save()]);
 
         console.log("Message saved successfully:", newMessage);

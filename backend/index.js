@@ -1,17 +1,19 @@
 import express from "express"
-const app = express();
+//const app = express();
+import { Server } from "socket.io"
 import dotenv from 'dotenv'
 import dbConnection from './database/dbconntection.js'
 import userRouter from './routes/userRouter.js'
 import msgrouter from './routes/msgrouter.js';
 import getalluserRoute from './routes/getalluserRouter.js'
 import cors from 'cors';
+import { app, server } from './Socket/socket.js'
 
 
 
 
 const corsOptions = {
-    origin: 'http://localhost:5174', // Frontend URL
+    origin: 'http://localhost:5173', // Frontend URL
     credentials: true, // Allow cookies to be sent and received
     //methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     //allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
@@ -46,6 +48,6 @@ app.use('/api/getallusers', getalluserRoute);
 
 
 
-app.listen(Port, () => {
+server.listen(Port, () => {
     console.log(`Server is running at http://localhost:${Port}`)
 })

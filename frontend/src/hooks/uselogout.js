@@ -23,8 +23,12 @@ const uselogout = () => {
             }
 
             // Clear user data from localStorage and auth context
+            localStorage.removeItem("refreshtoken");
             localStorage.removeItem("user");
+            //localStorage.removeItem("refreshtoken");
+
             setauthuser(null);
+
 
             toast.success("Logout successful!");
         } catch (error) {
